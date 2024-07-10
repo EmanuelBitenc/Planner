@@ -1,6 +1,7 @@
 package com.project.planner.participant;
 
 import com.project.planner.trip.Trip;
+import org.hibernate.query.sqm.internal.SqmQueryPartCreationProcessingStateStandardImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,20 @@ public class ParticipantService {
         System.out.println(participants.get(0).getId());
     }
 
+    public ParticipantCreateResponse registerParticipantToEvent(String email, Trip trip) {
+        Participant newParticipant = new Participant(email, trip);
+        this.repository.save(newParticipant);
+
+        return new ParticipantCreateResponse(newParticipant.getId());
+    }
+
     public void triggerConfirmationEmailToParticipants(UUID tripId) {
     }
+    public void triggerConfirmationEmailToParticipant(String email) {
+    }
+
+    public List<ParticipantData> getAllParticipantsFromEvent(UUID tripId) {
+        return this.repository.findByTripId(tripId).stream().map(participant -> new ParticipantData(participant.getId(), participant.getName(), participant.getEmail(), participant.getIsConfirmed())).toList();
+    }
+
 }
